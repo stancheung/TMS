@@ -1,0 +1,142 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+  <h5>Today's Classes</h5>  
+  <div class="card mb-5">
+    <div class="card-body">
+      <table class="table table-sm table-hover mb-4">
+        <thead>
+          <tr>
+            <th scope="col"><span>Class ID</span></th>
+            <th scope="col"><span>Class Title</span></th>
+            <th scope="col"><span>Start At</span></th>
+            <th scope="col"><span>Finish At</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in today_class_list %}
+          <tr id="toggleStudentListButton">
+            <td id="courseID"><span>{{ obj.id}}</span></td>
+            <td><span>{{ obj.course_title }}</span></td>
+            <td><span>{{ obj.course_start }}</span></td>
+            <td><span>{{ obj.course_end }}</span></td>
+		      </tr>
+          {% endfor %}
+        </tbody> </table>
+    </div>
+  </div>
+  <h5>Notify Payment Today</h5>
+  <div class="card">
+    <div class="card-body">
+      <table class="table table-sm table-hover mb-4">
+        <thead>
+          <tr>
+            <th scope="col"><span>Student Name</span></th>
+            <th scope="col"><span>Contact Number</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in payment_list %}
+          <tr>
+            <td><a href="#"><span>{{ obj.student_id}}</span></a></td>
+            <td><span></span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    url = "http://127.0.0.1:8000/timetable/"; 
+
+    const toggleStudentListButton = document.getElementById('toggleStudentListButton');
+    const addStudentToClassButton = document.getElementById('enrollButton'); 
+    const enrollInput = document.getElementById('enrollInput');
+    var courseID;
+
+    toggleStudentListButton.addEventListener('click', ()=>{
+      courseID = document.getElementById('courseID').innerText;
+      var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
+      StudentListModal.show();
+      fetchAllEnrollments(courseID).then(result => {
+        for (i = 0; i < result.length; i++) {
+          const studentList = document.getElementById('studentList');
+          const studentListRow = document.createElement('div');
+          const p = document.createElement('p');
+          const a = document.createElement('a');
+          p.textContent = `${result[i].student_name} ${result[i].phone_num}`;
+          console.log(result[i].enrollment_pk);
+          a.textContent = "Remove";
+          a.setAttribute("href", `/${result[i].enrollment_pk}/enrollment/delete`);
+          a.setAttribute("id", "deleteURL");
+          p.setAttribute("id", "studentListItem");
+          studentListRow.setAttribute("id", "studentListRow");
+          studentListRow.append(p);
+          studentListRow.append(a);
+          if(!studentList.textContent.includes(p.textContent)){
+            studentList.append(studentListRow);
+          }
+        }
+      })
+    });
+
+    addStudentToClassButton.addEventListener('click', ()=>{
+      event.preventDefault;
+      console.log(courseID); 
+      addStudentToClass(courseID).then(result => {
+        alert(result['enroll_response']);
+        enrollInput.value = "";
+      })
+    })
+
+    async function fetchAllEnrollments(courseID){
+      try{
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            "X-CSRFToken": csrfToken,
+          },
+          body: JSON.stringify({
+            'classID': courseID
+          }),
+          credentials: 'same-origin'
+        })
+        const data = await res.json();
+
+        return data
+      }
+      catch(error){
+        console.log(error);
+      }
+    } 
+    
+    async function addStudentToClass(courseID){
+      try{
+        const res = await fetch("http://127.0.0.1:8000/timetable/", {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          },
+          body: JSON.stringify({
+            'classID': courseID,
+            'phoneNum': enrollInput.value
+          }),
+          credentials: 'same-origin'
+        })
+        const data = await res.json();
+
+        return data
+      }
+      catch(error){
+        alert(JSON.stringify(error));
+        console.log(error);
+      }
+    }
+  </script>
+{% endblock %}

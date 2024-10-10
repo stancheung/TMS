@@ -1,0 +1,27 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="card">
+    <div class="card-body p5">
+      <!-- Form starts here -->
+      <form class="p-3" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Profile</legend>
+          <div class="form-group reg-form-group">{{ form|crispy }}</div>
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-primary text-light" id="profileUpdateButton" type="submit">Update</button>
+          <a class="btn btn-primary text-light" href="{% url 'SearchStudents' %}">Back</a>
+        </div>
+      </form>
+      <!-- Form ends here -->
+    </div>
+  </div>
+  <script>
+    const profileUpdateButton = document.getElementById("profileUpdateButton");
+    /*profileUpdateButton.addEventListener("submit", ()=>{
+      alert("Profile updated successfully");
+    });*/
+  </script>
+{% endblock %}

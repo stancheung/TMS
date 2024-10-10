@@ -1,0 +1,126 @@
+{% extends "users/base.html" %} {% load crispy_forms_tags %} {% block content %}
+{% csrf_token %}
+
+<div id="calendar"></div>
+
+<script>
+  url = "http://127.0.0.1:8000/timetable/";
+
+  function Timetable() {
+    var calendarEl = document.getElementById("calendar");
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: "dayGridMonth",
+
+      headerToolbar: {
+        left: 'prev,next',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      
+      navLinks: false,
+
+      eventDisplay: "block",
+
+      events: {{ events|safe }},
+
+      eventClick: function (info) {
+        info.jsEvent.preventDefault();
+
+        courseID = info.event.id;
+
+        var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
+        StudentListModal.show();
+
+        fetchStudentsInClass(courseID).then(result => {
+          for (i = 0; i < result.length; i++) {
+          const studentList = document.getElementById('studentList');
+          const studentListRow = document.createElement('div');
+          const p = document.createElement('p');
+          const a = document.createElement('a');
+          p.textContent = `${result[i].student_name} ${result[i].phone_num}`;
+          console.log(result[i].enrollment_pk);
+          a.textContent = "Remove";
+          a.setAttribute("href", `/${result[i].enrollment_pk}/enrollment/delete`);
+          a.setAttribute("id", "deleteURL");
+          p.setAttribute("id", "studentListItem");
+          studentListRow.setAttribute("id", "studentListRow");
+          studentListRow.append(p);
+          studentListRow.append(a);
+          if(!studentList.textContent.includes(p.textContent)){
+            studentList.append(studentListRow);
+          }
+        }
+        })
+      },
+    });
+
+    calendar.render();
+  }
+
+  document.addEventListener("DOMContentLoaded", Timetable());
+
+  async function fetchStudentsInClass(courseID) {
+    try{
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({
+          'classID': courseID,
+        }),
+        credentials: 'same-origin'
+      });
+      const data = await res.json();
+
+      return data
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
+
+  const enrollButton = document.getElementById('enrollButton');
+  const enrollInput = document.getElementById('enrollInput');
+
+  if (enrollButton){
+    enrollButton.addEventListener('click', ()=>{
+      console.log("enroll");
+      handleSubmit(event)
+        .then(result => {
+        alert(result['enroll_response']);
+        enrollInput.value = "";
+      })
+    });
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    try{
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({
+          'phoneNum': enrollInput.value,
+          'classID': courseID
+        }),
+        credentials: 'same-origin'
+      });
+      const data = await res.json();
+      return data;
+    }
+    catch(error){
+      console.log(error);
+      alert(JSON.stringify(error));
+    }
+  }
+
+</script>
+
+{% endblock %}

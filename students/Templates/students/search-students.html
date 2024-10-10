@@ -1,0 +1,102 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="card">
+    <div class="card-body p-3">
+        <form id="searchForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Phone Number" id="input">
+                <button id="ajax-button" class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </form>
+        <div class="mt-3" id="ajax-response">No result yet.</div>
+    </div>
+</div>
+
+<script>
+const searchForm = document.getElementById("searchForm");
+searchForm.addEventListener("submit", function(event){
+    event.preventDefault();
+    
+    const ajaxResponse = document.getElementById("ajax-response");
+    const studentDetailsList = document.createElement("div");
+    const updateProfileButton = document.createElement("a");
+    updateProfileButton.textContent = "Update";
+
+    fetchStudentDetails().then(result=>{
+        ajaxResponse.textContent = "";
+        for (var i in result){
+            console.log(result[i]);
+            if (i === "Id") {
+                updateProfileButton.setAttribute("href", `http://127.0.0.1:8000/student-profile/update/${result["Id"]}`);
+                updateProfileButton.setAttribute("class", "btn btn-primary text-light");
+                continue;
+            }
+            var studentDetailsContent = document.createElement('p');
+            studentDetailsContent.setAttribute("class", "mb-3");
+            studentDetailsContent.textContent = `${i}: ${result[i]}`;
+            studentDetailsList.append(studentDetailsContent);
+        }
+        studentDetailsList.append(updateProfileButton);
+        ajaxResponse.append(studentDetailsList);
+    });
+});
+
+async function fetchStudentDetails(){
+    try{
+        const res = await fetch("http://127.0.0.1:8000/student-profile/search/", {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            "X-CSRFToken": csrfToken,
+          },
+          body: JSON.stringify({
+            'input': document.getElementById('input').value,
+          }),
+          credentials: 'same-origin'
+        })
+        const data = await res.json();
+
+        return data
+      }
+      catch(error){
+        console.log(error);
+      }
+}
+/*    
+$(document).ready(function() {
+    $("#searchForm").on("submit", function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: "POST",
+            //url: "{% url "SearchStudents" %}",
+            data: {
+                "input": document.getElementById("input").value,
+                "csrfmiddlewaretoken": "{{ csrf_token }}"
+            },
+            success: function(context) {
+                for (var key in context) {
+                    if (key == "not_found_message") {
+                        $("#ajax-response").html(");
+                        $("#ajax-response").append("<p>" + context.not_found_message + "</p>");
+                        return;
+                    }
+                }
+                $("#ajax-response").html(");
+                $("#ajax-response").append("<p>Name: " + context.studentLastName + " " + context.studentFirstName + "</p>");
+                $("#ajax-response").append("<p>Gender: " + context.studentGender + "</p>");
+                $("#ajax-response").append("<p>Date of Birth: " + context.studentDOB + "</p>");
+                $("#ajax-response").append("<p>Contact Number: " + context.studentContactNumber + "</p>");
+                $("#ajax-response").append("<p>Emergency Contact Name: " + context.emergencyContactName + "</p>");
+                $("#ajax-response").append("<p class="mb-0 pb-0">Emergency Contact Number: " + context.emergencyContactNumber + "</p>");
+                $("#ajax-response").append("<a class="btn btn-primary text-light mt-3" href="/" + context.id + "/update"> Update ");
+            }
+        });
+    });
+});
+*/
+</script>
+{% endblock %}

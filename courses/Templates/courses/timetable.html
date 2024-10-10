@@ -1,0 +1,241 @@
+{% extends "users/base.html" %} {% load crispy_forms_tags %} {% block content %}
+{% csrf_token %}
+
+<div id="calendar"></div>
+
+<!--
+<script>
+  var classId;
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      timeZone: 'Asia/Hong_Kong',
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      selectable: false,
+      //slotDuration: '01:00:00',
+      navLinks: true,
+
+      navLinkDayClick: function(date, jsEvent) {
+        console.log('day', date.toISOString());
+      },
+
+      select: function(info) {
+      },
+
+      eventDidMount: function(arg) {
+        eventTitle = arg.el.getElementsByClassName('fc-event-title')[0];
+
+        // eventTitle.innerHTML += "<br>" + "Session " + arg.event.extendedProps.sessionNumber;
+      },
+
+      eventDisplay: 'block',
+
+      events: {{ events|safe }},
+
+      eventClick: function(info) {
+        info.jsEvent.preventDefault();
+        $('#StudentListModal').modal('toggle');
+        classId = info.event.id;
+        $.ajax({
+          type: 'GET',
+          success: function(response) {
+            console.log("Response:", response);
+            $('#studentList').html('');
+            for (i = 0; i < response.length; i++){
+              if (response[i].course_id == classId) {
+                $('#studentList').append('<p>' + response[i].student_name + ' ' + response[i].phone_num + '</p>');
+              }
+            }
+          },
+
+          error: function(error) {
+            console.log(error);
+          }
+        });
+      }
+    });
+    calendar.render();
+  });
+
+  $(document).ready(function() {
+    $('#enrollForm').on('submit', function(event) {
+      event.preventDefault();
+      console.log("fuck");
+      $.ajax({
+        type: 'POST',
+        data: {
+          'input': document.getElementById('enrollInput').value,
+          'classId': classId,
+          'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function(response){
+          alert(response.enroll_response);
+
+          //window.location.href = '{% url 'Timetable' %}';
+          /*$(".alert").remove();
+          $(".container").prepend(
+            '<div class="alert alert-success alert-dismissible">' + response.enroll_response + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button> </div>'
+          );*/
+          $("#enrollInput").val('');
+        }
+      });
+    });
+    $('#toggleEnrollModal').on('click', function() {
+      $('#StudentListModal').modal('hide');
+      $('#enrollModal').modal('show');
+    });
+  });
+</script>
+-->
+
+<!--
+<script>
+    url = 'http://127.0.0.1:8000/timetable/';
+
+    function Timetable() {
+      var calendarEl = document.getElementById("calendar");
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+
+        initialView: "dayGridMonth",
+
+        navLinks: true,
+
+        eventDisplay: 'block',
+
+        events: {{ events | safe }},
+
+        eventClick: function(info){
+          info.jsEvent.preventDefault();
+
+          courseID = info.event.id;
+
+          fetchStudentsInClass(courseID);
+        }
+
+      });
+      calendar.render();
+    }
+
+    document.addEventListener("DOMContentLoaded", Timetable());
+
+    async function fetchStudentsInClass(courseID) {
+      console.log(courseID);
+      try{
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+          },
+          body: {
+            'courseID': courseID,
+          }
+        });
+        const data = await res.json();
+      }
+      catch(error){
+        console.log('Error:', error);
+      }
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
+
+  const csrftoken = getCookie('csrftoken');
+</script>
+-->
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="StudentListModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Student List</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="studentList" class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="toggleEnrollModal">
+          Add Student
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Enrollment Modal Starts -->
+<div class="modal fade" id="enrollModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-bs-dismiss="modal">
+          &times;
+        </button>
+        <h4 id="enroll-modal-title" class="modal-title">Add Student</h4>
+      </div>
+      <form id="enrollForm" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-body">
+          <span>Student Contact Number</span>
+          <input
+            type="text"
+            id="enrollInput"
+            class="form-control"
+            name="enrollInput"
+          />
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">
+            Add
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Enrollment Modal Ends -->
+
+{% endblock %}

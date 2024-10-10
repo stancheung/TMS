@@ -1,0 +1,213 @@
+body {
+    overflow-y: auto;
+    overflow-x: auto;
+    padding-top: 70px;
+}
+
+p {
+    margin-bottom: 0;
+    font-size: 16px;
+}
+
+#toggleStudentListButton:hover{
+    cursor: pointer;
+}
+
+th, td {
+    font-size: 14px;
+    margin-left: 1rem;
+}
+
+table {
+    border-spacing: 0px;
+    border-collapse: separate !important;
+  }
+
+span{
+    margin-left: 1rem;
+}
+
+.container {
+    width: 55%;
+}
+
+.reg-container{
+    width: 30%;
+}
+
+.navbar .container {
+    width: 55%;
+}
+
+.dropdown-toggle {
+    outline: 0;
+}
+
+.home-btn,
+.home-btn:hover {
+    padding: .25rem .5rem;
+    margin-left: 1.05rem;
+    font-weight: 600;
+    color: #393a3b;
+    background-color: transparent;
+}
+
+.bi-caret-down-fill {
+    color: #393a3b;
+    font-size: 75%;
+}
+
+.btn.btn-link{
+	text-decoration: unset;
+	padding: 0px;
+	color: inherit;
+}
+
+.btn-link:hover,
+.btn-link:focus{
+	font-size: 14px;
+}
+
+.btn-toggle {
+    padding: .25rem .5rem;
+    font-weight: 600;
+    color: #393a3b;
+    background-color: transparent;
+}
+
+.btn-toggle:hover,
+.btn-toggle:focus {
+    color: #393a3b;
+    background-color: var(--bs-tertiary-bg);
+} 
+
+.btn-toggle::before {
+    width: 1.25em;
+    line-height: 0;
+    /* content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%280,0,0,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e"); */
+    transition: transform .35s ease;
+    transform-origin: .5em 50%;
+}
+
+/* [data-bs-theme="dark"] .btn-toggle::before {
+    content: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='rgba%28255,255,255,.5%29' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 14l6-6-6-6'/%3e%3c/svg%3e");
+} */
+
+.btn-toggle[aria-expanded="true"] {
+    color: #393a3b;
+}
+
+.btn-toggle[aria-expanded="true"]::before {
+    transform: rotate(90deg);
+}
+
+.btn-toggle-nav a {
+    padding: .1875rem .5rem;
+    margin-top: .125rem;
+    margin-left: 1.25rem;
+}
+
+.btn-toggle-nav a:hover,
+.btn-toggle-nav a:focus {
+    background-color: var(--bs-tertiary-bg);
+}
+
+.link-body-emphasis {
+    color: whitesmoke;
+}
+
+.link-body-emphasis:hover {
+    color: white;
+}
+
+.scrollarea {
+    overflow-y: auto;
+}
+
+.container {
+    height: 100%;
+}
+
+#calendar {
+    width: 100%;
+    height: 95%;
+    margin-top: 20px;
+    border: 1px solid rgb(210, 210, 210);
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px rgb(210, 210, 210);
+    padding: 20px;
+}
+
+.fc .fc-timegrid-slot {
+    height: 2em;
+    border-bottom: 0 !important;
+}
+
+.fc .fc-daygrid-day-number {
+    color: black;
+    text-decoration: none;
+}
+
+.fc-col-header-cell-cushion,
+.fc-col-header-cell-cushion:hover{
+    color: black;
+    text-decoration: none;
+}
+
+.fc .fc-button{
+    background-color: transparent;
+    color:#393a3b;
+    border: none;
+}
+
+.fc .fc-button:hover,
+.fc .fc-button:focus{
+    background-color: rgb(230,230,230); 
+    color:#393a3b;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active, .fc .fc-button-primary:not(:disabled):active{
+    background-color: rgb(230,230,230);
+    color:#393a3b;
+}
+
+/* .tdy-class, .pay-notify{
+    width: 100%;
+    margin-top: 20px;
+    border: 1px solid rgb(210, 210, 210);
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px rgb(210, 210, 210);
+    padding: 20px;
+} */
+
+.card {
+    margin-top: 24px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px rgb(210, 210, 210);
+}
+
+.card-body{
+    padding: 0;
+}
+
+#ajax-response p {
+    padding-bottom: 0;
+}
+
+#ajax-response {
+    padding-bottom: 0;
+    margin-left: 12px;
+}
+
+#studentListRow {
+    text-align: right;
+}
+
+#studentListItem {
+    margin: 0;
+    float: left;
+}
+
+#deleteURL {
+    display: inline-block;
+}
