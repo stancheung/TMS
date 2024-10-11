@@ -21,7 +21,7 @@ class TimetableView(LoginRequiredMixin, View):
     def post(self, request):
         if is_ajax(request):
             requestBody = decodeRequest(request)
-            if not requestBody.get('phoneNum'):
+            if requestBody and not requestBody.get('phoneNum'):
                 return self.showAllEnrollments(requestBody)
             return self.createEnrollment(requestBody)
         return self.showTimetable(request)
@@ -77,7 +77,7 @@ class TimetableView(LoginRequiredMixin, View):
                 Enrollment.objects.get(student_id = student_id, course_id = course_id)
                 res = {'enroll_response': 'Enrollment already exists.'}
 
-            except:
+            except Enrollment.DoesNotExist:
                 course = Course.objects.filter(id=courseID).first()
                 student = Student.objects.filter(studentContactNumber = phoneNum).first()
 
@@ -98,6 +98,11 @@ class ClassCreateView(CreateView):
     model = Course
     success_url = '/'
     form_class = CourseCreateForm
+
+class ClassDeleteView(DeleteView):
+    model = Course
+    success_url = '/'
+    template_name = 'courses/delete-class.html'
 
 class EnrollmentDeleteView(DeleteView):
     model = Enrollment

@@ -29,7 +29,7 @@
         courseID = info.event.id;
 
         var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
-        StudentListModal.show();
+        StudentListModal.show(); 
 
         fetchStudentsInClass(courseID).then(result => {
           for (i = 0; i < result.length; i++) {
@@ -40,7 +40,7 @@
           p.textContent = `${result[i].student_name} ${result[i].phone_num}`;
           console.log(result[i].enrollment_pk);
           a.textContent = "Remove";
-          a.setAttribute("href", `/${result[i].enrollment_pk}/enrollment/delete`);
+          a.setAttribute("href", `/enrollment/delete/${result[i].enrollment_pk}`);
           a.setAttribute("id", "deleteURL");
           p.setAttribute("id", "studentListItem");
           studentListRow.setAttribute("id", "studentListRow");
@@ -58,6 +58,39 @@
   }
 
   document.addEventListener("DOMContentLoaded", Timetable());
+
+  const DeleteClassButton = document.getElementById('DeleteClassButton');
+  DeleteClassButton.addEventListener("click", ()=>{
+    var confirmDelete = confirm("Are you sure you want to delete this class?");
+
+    if(confirmDelete){
+      DeleteClass(courseID).then(
+        result=>{
+          location.reload();
+        }
+      );
+    }else{
+      return;
+    }
+  });
+
+  async function DeleteClass(courseID) {
+    try{
+      const res = await fetch(`/delete-class/${courseID}`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({
+          'classID': courseID,
+        })
+      });
+      const data = await res.json();
+
+      return data;
+    }
+    catch(error){}
+  }
 
   async function fetchStudentsInClass(courseID) {
     try{

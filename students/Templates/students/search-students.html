@@ -23,16 +23,23 @@ searchForm.addEventListener("submit", function(event){
     const ajaxResponse = document.getElementById("ajax-response");
     const studentDetailsList = document.createElement("div");
     const updateProfileButton = document.createElement("a");
+    const deleteProfileButton = document.createElement("a");
     updateProfileButton.textContent = "Update";
+    deleteProfileButton.textContent = "Delete";
 
     fetchStudentDetails().then(result=>{
         ajaxResponse.textContent = "";
         for (var i in result){
-            console.log(result[i]);
             if (i === "Id") {
-                updateProfileButton.setAttribute("href", `http://127.0.0.1:8000/student-profile/update/${result["Id"]}`);
-                updateProfileButton.setAttribute("class", "btn btn-primary text-light");
+                updateProfileButton.setAttribute("href", `/student-profile/update/${result["Id"]}`);
+                updateProfileButton.setAttribute("class", "btn btn-primary text-light me-2");
+        deleteProfileButton.setAttribute("href", `/student-profile/delete/${result["Id"]}`);
+                deleteProfileButton.setAttribute("class", "btn btn-danger text-light");
                 continue;
+            }
+            if (i === "not_found_message") {
+                ajaxResponse.append(result[i]);
+                return;
             }
             var studentDetailsContent = document.createElement('p');
             studentDetailsContent.setAttribute("class", "mb-3");
@@ -40,6 +47,7 @@ searchForm.addEventListener("submit", function(event){
             studentDetailsList.append(studentDetailsContent);
         }
         studentDetailsList.append(updateProfileButton);
+        studentDetailsList.append(deleteProfileButton);
         ajaxResponse.append(studentDetailsList);
     });
 });

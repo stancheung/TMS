@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views.generic import UpdateView
+from django.views.generic import DeleteView, UpdateView
 from .forms import StudentsCreationForm
 from django.contrib import messages
 from django.http import JsonResponse
@@ -49,9 +49,14 @@ class StudentProfileView(LoginRequiredMixin, View):
 class StudentProfileUpdateView(UpdateView):
     model = Student
     fields = '__all__'
-    success_url = '/'
+    success_url = '/student-profile/search/'
     template_name = 'students/student-profile.html'
 
     def form_valid(self, form):
         messages.success(self.request, "Profile updated successfully")
         return super().form_valid(form)
+
+class StudentProfileDeleteView(DeleteView):
+    model = Student
+    success_url = '/student-profile/search/'
+    template_name = 'students/delete-student.html'

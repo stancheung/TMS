@@ -27,10 +27,11 @@ urlpatterns = [
     path("",auth_views.LoginView.as_view(template_name="users/login.html", redirect_authenticated_user=True),name="Login"),
     path("logout/",auth_views.LogoutView.as_view(template_name="users/logout.html"),name="Logout"),
     path('home/', users_views.HomeView.as_view(template_name='users/home.html'), name='Homepage'),
+    path('delete-class/<int:pk>', courses_views.ClassDeleteView.as_view(), name='DeleteClass'),
     path("create-students/", students_views.CreateStudents, name="CreateStudents"),
     path("student-profile/", include("students.urls")),
     path('timetable/', courses_views.TimetableView.as_view(), name='Timetable'),
     path("new-class/",courses_views.ClassCreateView.as_view(template_name="courses/create-class.html"),name="CreateClass"),
-    path("<pk>/enrollment/delete/", courses_views.EnrollmentDeleteView.as_view(), name="DeleteEnrollment")
+    path("enrollment/delete/<int:pk>", courses_views.EnrollmentDeleteView.as_view(), name="DeleteEnrollment")
 ]
 
