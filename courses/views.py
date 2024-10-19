@@ -1,10 +1,10 @@
 import json
-from datetime import date, datetime, time
+from datetime import datetime
 from django.views import View
 from django.views.generic import CreateView, DeleteView
 from django.forms import model_to_dict
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from courses.models import Course, Enrollment, Student
 from students.views import is_ajax
 from .forms import CourseCreateForm
