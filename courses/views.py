@@ -47,18 +47,39 @@ class TimetableView(LoginRequiredMixin, View):
         courseID = requestBody.get('classID')
         enrollments = Enrollment.objects.filter(course_id=courseID)
         enroll_arr = []
+        enroll_dict = {}
+
+        course = Course.objects.filter(pk=courseID).first()
+        if course:
+            course_date = course.course_date.strftime('%d/%m/%Y')
+            course_start = course.course_start.strftime('%I:%M %p')
+            course_end = course.course_end.strftime('%I:%M %p')
+            course_title = f"{course.course_title} {course_date} {course_start} - {course_end}"
+            enroll_dict['course_title'] = course_title
 
         for e in enrollments:
             enroll_obj = model_to_dict(e)
             student_obj = Student.objects.filter(pk=enroll_obj['student_id']).first()
             enrollment_pk = e.pk
+
             phone_num = getattr(student_obj, 'studentContactNumber')
             student_name = f'{getattr(student_obj, 'studentFirstName')} {getattr(student_obj, 'studentLastName')}'
-            enroll_obj['enrollment_pk'] = enrollment_pk
-            enroll_obj['student_name'] = student_name
-            enroll_obj['phone_num'] = phone_num
-            enroll_arr.append(enroll_obj)
 
+            enrollmentDetails = {}
+            enrollmentDetails['enrollment_pk'] = enrollment_pk
+            enrollmentDetails['phone_num'] = phone_num
+            enrollmentDetails['student_name'] = student_name
+
+            enroll_dict['enrollmentDetails'] = enrollmentDetails
+
+            '''
+            enroll_dict['enrollment_pk'] = enrollment_pk
+            enroll_dict['phone_num'] = phone_num
+            enroll_dict['student_name'] = student_name
+            '''
+
+        enroll_arr.append(enroll_dict)
+        print(enroll_arr)
         return JsonResponse(enroll_arr, safe=False)
 
     def createEnrollment(self, requestBody):

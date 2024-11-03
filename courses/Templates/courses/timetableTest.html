@@ -29,27 +29,40 @@
         courseID = info.event.id;
 
         var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
-        StudentListModal.show(); 
+        StudentListModal.show();
+
+        studentList.replaceChildren();
 
         fetchStudentsInClass(courseID).then(result => {
-          for (i = 0; i < result.length; i++) {
           const studentList = document.getElementById('studentList');
+          const classDetailModal = document.getElementById('classDetailModal');
           const studentListRow = document.createElement('div');
           const p = document.createElement('p');
           const a = document.createElement('a');
-          p.textContent = `${result[i].student_name} ${result[i].phone_num}`;
-          console.log(result[i].enrollment_pk);
-          a.textContent = "Remove";
-          a.setAttribute("href", `/enrollment/delete/${result[i].enrollment_pk}`);
-          a.setAttribute("id", "deleteURL");
-          p.setAttribute("id", "studentListItem");
-          studentListRow.setAttribute("id", "studentListRow");
-          studentListRow.append(p);
-          studentListRow.append(a);
-          if(!studentList.textContent.includes(p.textContent)){
-            studentList.append(studentListRow);
+
+          studentListRow.replaceChildren();
+
+          for (i = 0; i < result.length; i++) {
+
+            classDetailModal.textContent = result[i].course_title;
+
+            if(result[i].enrollmentDetails){
+              console.log('success');
+              enrollmentDetails = result[i].enrollmentDetails
+              p.textContent = `${enrollmentDetails.student_name} ${enrollmentDetails.phone_num}`;
+              a.textContent = "Remove";
+              a.setAttribute("href", `/enrollment/delete/${enrollmentDetails.enrollment_pk}`);
+              a.setAttribute("id", "deleteURL");
+              p.setAttribute("id", "studentListItem");
+              studentListRow.setAttribute("id", "studentListRow");
+              studentListRow.append(p);
+              studentListRow.append(a);
+            }
+
+            if(!studentList.textContent.includes(p.textContent)){
+              studentList.append(studentListRow);
+            }
           }
-        }
         })
       },
     });
