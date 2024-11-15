@@ -12,13 +12,13 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     /> 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-
+    <script src="{% static 'js/script.js' %}"></script>
     <link rel="stylesheet" href="{% static 'users/main.css' %}" />
     <title>TMS</title>
   </head>
 
   <body>
-    <script> src="../../../bootstrap-5.3.3-dist/bootstrap-5.3.3-dist/js/bootstrap.js"</script>
+    <!--<script src="../../../bootstrap-5.3.3-dist/bootstrap-5.3.3-dist/js/bootstrap.js"></script>-->
     <main>
       <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
         <div class="container">
@@ -156,7 +156,7 @@
 				  />
 				</div>
 				<div class="modal-footer">
-				  <button id='enrollButton' class="btn btn-primary" type="submit" data-bs-dismiss="modal">
+          <button id='enrollButton' class="btn btn-primary" onclick="enrollmentAction(event)" type="submit" data-bs-dismiss="modal">
 					Add
 				  </button>
 				  <button

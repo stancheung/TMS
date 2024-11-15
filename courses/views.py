@@ -6,7 +6,6 @@ from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 from courses.models import Course, Enrollment, Student
-from students.views import is_ajax
 from .forms import CourseCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from tools import DateEncoder, is_ajax, decodeRequest
@@ -47,6 +46,7 @@ class TimetableView(LoginRequiredMixin, View):
         courseID = requestBody.get('classID')
         enrollments = Enrollment.objects.filter(course_id=courseID)
         enroll_arr = []
+        enrollmentList = []
         enroll_dict = {}
 
         course = Course.objects.filter(pk=courseID).first()
@@ -69,8 +69,11 @@ class TimetableView(LoginRequiredMixin, View):
             enrollmentDetails['enrollment_pk'] = enrollment_pk
             enrollmentDetails['phone_num'] = phone_num
             enrollmentDetails['student_name'] = student_name
+            enrollmentList.append(enrollmentDetails)
 
-            enroll_dict['enrollmentDetails'] = enrollmentDetails
+            enroll_dict['enrollmentList'] = enrollmentList
+
+            print(enroll_dict)
 
             '''
             enroll_dict['enrollment_pk'] = enrollment_pk
@@ -79,41 +82,40 @@ class TimetableView(LoginRequiredMixin, View):
             '''
 
         enroll_arr.append(enroll_dict)
-        print(enroll_arr)
+        #print(enroll_arr)
         return JsonResponse(enroll_arr, safe=False)
 
     def createEnrollment(self, requestBody):
-            phoneNum = requestBody.get('phoneNum')
-            courseID = requestBody.get('classID')
+        phoneNum = requestBody.get('phoneNum')
+        courseID = requestBody.get('classID')
+        print(courseID)
+        res = {}
 
-            res = {}
+        if len(phoneNum) != 8 or not phoneNum.isnumeric():
+            res = {'enroll_response': 'Phone number can only be 8 digits.'}
+            return JsonResponse(res)
+        
+        try:
+            student_id = Student.objects.filter(studentContactNumber = phoneNum).first()
+            course_id = Course.objects.filter(id=courseID).first()
+            Enrollment.objects.get(student_id = student_id, course_id = course_id)
+            res = {'enroll_response': 'Enrollment already exists.'}
 
-            if len(phoneNum) != 8 or not phoneNum.isnumeric():
-                res = {'enroll_response': 'Phone number can only be 8 digits.'}
-                return res
-            
-            try:
-                student_id = Student.objects.filter(studentContactNumber = phoneNum).first()
-                course_id = Course.objects.filter(id=courseID).first()
-                Enrollment.objects.get(student_id = student_id, course_id = course_id)
-                res = {'enroll_response': 'Enrollment already exists.'}
+        except Enrollment.DoesNotExist:
+            course = Course.objects.filter(id=courseID).first()
+            student = Student.objects.filter(studentContactNumber = phoneNum).first()
+            if not student:
+                res = {'enroll_response': 'Student does not exist.'}
+                return JsonResponse(res)
+            print("enroll")
+            newEnrollment = Enrollment(
+                student_id = student,
+                course_id = course,
+            )
 
-            except Enrollment.DoesNotExist:
-                course = Course.objects.filter(id=courseID).first()
-                student = Student.objects.filter(studentContactNumber = phoneNum).first()
-
-                if not student:
-                    res = {'enroll_response': 'Student does not exist.'}
-                    return res
-                
-                newEnrollment = Enrollment(
-                    student_id = student,
-                    course_id = course,
-                )
-
-                newEnrollment.save()
-                res = {'enroll_response': 'Student added to class successfully.'}
-            return JsonResponse(res) 
+            newEnrollment.save()
+            res = {'enroll_response': 'Student added to class successfully.'}
+        return JsonResponse(res) 
     
 class ClassCreateView(CreateView):
     model = Course

@@ -5,6 +5,8 @@
 
 <script>
   url = "http://127.0.0.1:8000/timetable/";
+  var courseID;
+  var counter = 0;
 
   function Timetable() {
     var calendarEl = document.getElementById("calendar");
@@ -26,147 +28,42 @@
       eventClick: function (info) {
         info.jsEvent.preventDefault();
 
+        console.log(counter);
+
         courseID = info.event.id;
+
+        options = {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken,
+          },
+          body: JSON.stringify({
+            'classID': courseID,
+          }),
+          credentials: 'same-origin'
+        }
 
         var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
         StudentListModal.show();
 
-        studentList.replaceChildren();
+        //studentList.replaceChildren();
 
-        fetchStudentsInClass(courseID).then(result => {
-          const studentList = document.getElementById('studentList');
-          const classDetailModal = document.getElementById('classDetailModal');
-          const studentListRow = document.createElement('div');
-          const p = document.createElement('p');
-          const a = document.createElement('a');
-
-          studentListRow.replaceChildren();
-
-          for (i = 0; i < result.length; i++) {
-
-            classDetailModal.textContent = result[i].course_title;
-
-            if(result[i].enrollmentDetails){
-              console.log('success');
-              enrollmentDetails = result[i].enrollmentDetails
-              p.textContent = `${enrollmentDetails.student_name} ${enrollmentDetails.phone_num}`;
-              a.textContent = "Remove";
-              a.setAttribute("href", `/enrollment/delete/${enrollmentDetails.enrollment_pk}`);
-              a.setAttribute("id", "deleteURL");
-              p.setAttribute("id", "studentListItem");
-              studentListRow.setAttribute("id", "studentListRow");
-              studentListRow.append(p);
-              studentListRow.append(a);
-            }
-
-            if(!studentList.textContent.includes(p.textContent)){
-              studentList.append(studentListRow);
-            }
+        fetchData(url, options).then(
+          result=>{
+            displayStudentsInClass(result, counter);
           }
-        })
+        )
+
+        deleteClass(courseID);
       },
     });
 
     calendar.render();
+
   }
 
   document.addEventListener("DOMContentLoaded", Timetable());
-
-  const DeleteClassButton = document.getElementById('DeleteClassButton');
-  DeleteClassButton.addEventListener("click", ()=>{
-    var confirmDelete = confirm("Are you sure you want to delete this class?");
-
-    if(confirmDelete){
-      DeleteClass(courseID).then(
-        result=>{
-          location.reload();
-        }
-      );
-    }else{
-      return;
-    }
-  });
-
-  async function DeleteClass(courseID) {
-    try{
-      const res = await fetch(`/delete-class/${courseID}`, {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify({
-          'classID': courseID,
-        })
-      });
-      const data = await res.json();
-
-      return data;
-    }
-    catch(error){}
-  }
-
-  async function fetchStudentsInClass(courseID) {
-    try{
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-          "Content-Type": "application/json",
-          "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify({
-          'classID': courseID,
-        }),
-        credentials: 'same-origin'
-      });
-      const data = await res.json();
-
-      return data
-    }
-    catch(error){
-      console.log(error);
-    }
-  }
-
-  const enrollButton = document.getElementById('enrollButton');
-  const enrollInput = document.getElementById('enrollInput');
-
-  if (enrollButton){
-    enrollButton.addEventListener('click', ()=>{
-      console.log("enroll");
-      handleSubmit(event)
-        .then(result => {
-        alert(result['enroll_response']);
-        enrollInput.value = "";
-      })
-    });
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-    try{
-      const res = await fetch(url, {
-        method: "POST",
-        headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify({
-          'phoneNum': enrollInput.value,
-          'classID': courseID
-        }),
-        credentials: 'same-origin'
-      });
-      const data = await res.json();
-      return data;
-    }
-    catch(error){
-      console.log(error);
-      alert(JSON.stringify(error));
-    }
-  }
-
 </script>
-
 {% endblock %}

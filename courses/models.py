@@ -36,6 +36,7 @@ class Enrollment(models.Model):
     # session_number = models.IntegerField(default=1, blank=True)
     # first_session_pointer = models.IntegerField(null=True, blank=True)
 
+'''
 @receiver(post_save, sender=Enrollment)
 def auto_create_enrollment(sender, instance, created, **kwargs):
     course = Course.objects.filter(course_date = instance.course_id.course_date + timedelta(days=7)).first()
@@ -54,7 +55,7 @@ def auto_create_enrollment(sender, instance, created, **kwargs):
             i.payday = False
 
         i.save()
-
+'''
 # @receiver(post_save, sender=Enrollment)
 # def auto_create_enrollment(sender, instance, **kwargs):
 #     pass

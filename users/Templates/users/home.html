@@ -49,94 +49,43 @@
   </div>
   
   <script>
-    url = "http://127.0.0.1:8000/timetable/"; 
+    url = "http://127.0.0.1:8000/timetable/";
 
+    /*
     const toggleStudentListButton = document.getElementById('toggleStudentListButton');
     const addStudentToClassButton = document.getElementById('enrollButton'); 
     const enrollInput = document.getElementById('enrollInput');
     var courseID;
+    */
 
     toggleStudentListButton.addEventListener('click', ()=>{
       courseID = document.getElementById('courseID').innerText;
       var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
       StudentListModal.show();
-      fetchAllEnrollments(courseID).then(result => {
-        for (i = 0; i < result.length; i++) {
-          const studentList = document.getElementById('studentList');
-          const studentListRow = document.createElement('div');
-          const p = document.createElement('p');
-          const a = document.createElement('a');
-          p.textContent = `${result[i].student_name} ${result[i].phone_num}`;
-          console.log(result[i].enrollment_pk);
-          a.textContent = "Remove";
-          a.setAttribute("href", `/${result[i].enrollment_pk}/enrollment/delete`);
-          a.setAttribute("id", "deleteURL");
-          p.setAttribute("id", "studentListItem");
-          studentListRow.setAttribute("id", "studentListRow");
-          studentListRow.append(p);
-          studentListRow.append(a);
-          if(!studentList.textContent.includes(p.textContent)){
-            studentList.append(studentListRow);
-          }
+
+      options = {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({
+          'classID': courseID,
+        }),
+        credentials: 'same-origin'
+      }
+
+      //studentList.replaceChildren();
+
+      fetchData(url, options).then(
+        result=>{
+          displayStudentsInClass(result);
         }
-      })
+      );
+
+
+      deleteClass(courseID);
     });
-
-    addStudentToClassButton.addEventListener('click', ()=>{
-      event.preventDefault;
-      console.log(courseID); 
-      addStudentToClass(courseID).then(result => {
-        alert(result['enroll_response']);
-        enrollInput.value = "";
-      })
-    })
-
-    async function fetchAllEnrollments(courseID){
-      try{
-        const res = await fetch(url, {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json',
-            "X-CSRFToken": csrfToken,
-          },
-          body: JSON.stringify({
-            'classID': courseID
-          }),
-          credentials: 'same-origin'
-        })
-        const data = await res.json();
-
-        return data
-      }
-      catch(error){
-        console.log(error);
-      }
-    } 
-    
-    async function addStudentToClass(courseID){
-      try{
-        const res = await fetch("http://127.0.0.1:8000/timetable/", {
-          method: 'POST',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrfToken,
-          },
-          body: JSON.stringify({
-            'classID': courseID,
-            'phoneNum': enrollInput.value
-          }),
-          credentials: 'same-origin'
-        })
-        const data = await res.json();
-
-        return data
-      }
-      catch(error){
-        alert(JSON.stringify(error));
-        console.log(error);
-      }
-    }
   </script>
 {% endblock %}

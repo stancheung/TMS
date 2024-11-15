@@ -12,14 +12,11 @@ greenlet==3.1.1
 icalendar==5.0.12
 msgpack==1.1.0
 mysqlclient==2.2.4
-neovim==0.3.1
 prompt_toolkit==3.0.48
 pyflakes==3.2.0
 Pygments==2.18.0
-pynvim==0.5.0
 python-dateutil==2.9.0.post0
 pytz==2024.1
-pyvim==3.0.3
 six==1.16.0
 soupsieve==2.5
 sqlparse==0.4.4

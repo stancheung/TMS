@@ -199,15 +199,17 @@ span{
     margin-left: 12px;
 }
 
-#studentListRow {
+
+.studentListRow {
     text-align: right;
 }
 
-#studentListItem {
+.studentListItem {
     margin: 0;
     float: left;
 }
 
-#deleteURL {
+.deleteURL {
     display: inline-block;
 }
+
