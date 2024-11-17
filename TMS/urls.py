@@ -32,6 +32,7 @@ urlpatterns = [
     path("student-profile/", include("students.urls")),
     path('timetable/', courses_views.TimetableView.as_view(), name='Timetable'),
     path("new-class/",courses_views.ClassCreateView.as_view(template_name="courses/create-class.html"),name="CreateClass"),
-    path("enrollment/delete/<int:pk>", courses_views.EnrollmentDeleteView.as_view(), name="DeleteEnrollment")
+    path("enrollment/delete/<int:pk>", courses_views.EnrollmentDeleteView.as_view(), name="DeleteEnrollment"),
+    path("class-details/<int:pk>",  courses_views.ClassAttendanceView.as_view(), name="ClassAttendance")
 ]
 

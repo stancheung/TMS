@@ -49,17 +49,11 @@
   </div>
   
   <script>
-    url = "http://127.0.0.1:8000/timetable/";
-
-    /*
-    const toggleStudentListButton = document.getElementById('toggleStudentListButton');
-    const addStudentToClassButton = document.getElementById('enrollButton'); 
-    const enrollInput = document.getElementById('enrollInput');
-    var courseID;
-    */
+    url = "/timetable/";
 
     toggleStudentListButton.addEventListener('click', ()=>{
       courseID = document.getElementById('courseID').innerText;
+      console.log(courseID);
       var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
       StudentListModal.show();
 

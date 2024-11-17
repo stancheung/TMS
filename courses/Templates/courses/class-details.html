@@ -1,0 +1,15 @@
+{% extends "users/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+  <div class="card">
+    <div class="card-body p5">
+      <ul>
+        {% for enrollment in object_list  %}
+        <li>{{ enrollmnet.id }}</li>          
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+{% endblock %}

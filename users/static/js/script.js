@@ -8,7 +8,7 @@ async function fetchData(url, options = {}) {
         return data;
     } catch (error) {
         console.error('Fetch error:', error);
-        //alert(error);
+        alert(error);
     }
 }
 
@@ -27,12 +27,24 @@ async function fetchDataNoReload(event, url, options = {}) {
   }
 }
 
+async function deletionAPI(url, options = {}){
+  try{
+    const response = await fetch(url, options);
+    if(!response.ok){
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response;
+  } catch(error) {
+    console.error('Fetch error:', error);
+    alert(error);
+  }
+}
+
 function displayStudentsInClass(result, counter){
   const studentList = document.getElementById('studentList');
   const classDetailModal = document.getElementById('classDetailModal');
   const enrollmentInput = document.getElementById('enrollInput');
   enrollInput.value="";
-  //studentListRow.replaceChildren();
 
   for (i = 0; i < result.length; i++) {
 
@@ -41,20 +53,19 @@ function displayStudentsInClass(result, counter){
     if(result[i].enrollmentList){
       enrollmentList = result[i].enrollmentList;
 
-      //generateAttendanceList();
-
       for (j = 0; j < enrollmentList.length; j++){
         const studentListRow = document.createElement('div');
         const p = document.createElement('p');
-        const a = document.createElement('a');
+        const removeButton = document.createElement('a');
         p.textContent = `${enrollmentList[j].student_name} ${enrollmentList[j].phone_num}`;
-        a.textContent = "Remove";
-        a.setAttribute("onclick", `deleteEnrollment(${enrollmentList[i].enrollment_pk})`);
-        a.setAttribute("class", "deleteURL");
+        removeButton.textContent = "Remove";
+        removeButton.setAttribute("onclick", `deleteEnrollment(${enrollmentList[i].enrollment_pk})`);
+        removeButton.setAttribute("class", "deleteURL");
+        removeButton.setAttribute("type", "button");
         p.setAttribute("class", "studentListItem");
         studentListRow.setAttribute("class", "studentListRow");
         studentListRow.append(p);
-        studentListRow.append(a);
+        studentListRow.append(removeButton);
         if(!studentList.textContent.includes(p.textContent)){
           studentList.append(studentListRow);
         }
@@ -65,7 +76,7 @@ function displayStudentsInClass(result, counter){
 
 function enrollmentAction(event){
   event.preventDefault();
-  url = "http://127.0.0.1:8000/timetable/";
+  url = "/timetable/";
   options = {
     method: "POST",
     headers: {
@@ -85,43 +96,6 @@ function enrollmentAction(event){
   })
 }
 
-/*
-function enrollmentAction(courseID){
-  const enrollButton = document.getElementById('enrollButton');
-  const enrollInput = document.getElementById('enrollInput');
-  let counter = 0;
-
-  if (enrollButton){
-    console.log("exist");
-    enrollButton.addEventListener('click', (event)=>{
-      event.preventDefault();
-      counter ++;
-      console.log(`click ${counter}`);
-      url = "http://127.0.0.1:8000/timetable/";
-      options = {
-        method: "POST",
-        headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
-        },
-        body: JSON.stringify({
-          'phoneNum': enrollInput.value,
-          'classID': courseID
-        }),
-        credentials: 'same-origin'
-      }
-      fetchDataNoReload(event, url, options).then(result => {
-        alert(result['enroll_response']);
-        enrollInput.value = "";
-        location.reload();
-      })
-    });
-
-  }
-}
-*/
-
 function deleteClass(courseID){
   const DeleteClassButton = document.getElementById('DeleteClassButton');
   DeleteClassButton.addEventListener("click", ()=>{
@@ -133,12 +107,12 @@ function deleteClass(courseID){
         "X-CSRFToken": csrfToken,
       },
       body: JSON.stringify({
-        'classID': courseID,
+        "classID": courseID,
       })
     }
 
     if(confirmDelete){
-      fetchData(url, options).then(
+      deletionAPI(url, options).then(
         result=>{
           location.reload();
         }
@@ -149,25 +123,23 @@ function deleteClass(courseID){
   });
 }
 
-//Fetch error still exists but so far it doesn't affect functionality
 function deleteEnrollment(enrollmentID){
   var confirmDelete = confirm("Are you sure you want to remove this student from this class?");
-  url = `/enrollment/delete/${enrollmentID}`;
-  options = {
-    method: "POST",
-    headers: {
-      "X-CSRFToken": csrfToken
-    }
-  }
 
   if(confirmDelete){
-    fetchData(url, options).then(
+    url = `/enrollment/delete/${enrollmentID}`;
+    options = {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": csrfToken
+      }
+    }
+    deletionAPI(url, options).then(
       result=>{
         location.reload();
       }
     );
   }else{
-    location.reload();
     return;
   }
 }

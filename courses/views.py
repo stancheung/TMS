@@ -1,7 +1,7 @@
 import json
 from datetime import datetime
 from django.views import View
-from django.views.generic import CreateView, DeleteView
+from django.views.generic import CreateView, DeleteView, ListView
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -73,22 +73,12 @@ class TimetableView(LoginRequiredMixin, View):
 
             enroll_dict['enrollmentList'] = enrollmentList
 
-            print(enroll_dict)
-
-            '''
-            enroll_dict['enrollment_pk'] = enrollment_pk
-            enroll_dict['phone_num'] = phone_num
-            enroll_dict['student_name'] = student_name
-            '''
-
         enroll_arr.append(enroll_dict)
-        #print(enroll_arr)
         return JsonResponse(enroll_arr, safe=False)
 
     def createEnrollment(self, requestBody):
         phoneNum = requestBody.get('phoneNum')
         courseID = requestBody.get('classID')
-        print(courseID)
         res = {}
 
         if len(phoneNum) != 8 or not phoneNum.isnumeric():
@@ -116,7 +106,18 @@ class TimetableView(LoginRequiredMixin, View):
             newEnrollment.save()
             res = {'enroll_response': 'Student added to class successfully.'}
         return JsonResponse(res) 
-    
+
+class ClassAttendanceView(ListView):
+    template_name = "class-details.html"
+    context_object_name = "enrollments"
+
+    def get_queryset(self):
+        requestBody = decodeRequest(self.request)
+        print(requestBody)
+        if requestBody:
+            course_id = requestBody.get("classID")
+        return Enrollment.objects.filter(course_id=course_id)
+
 class ClassCreateView(CreateView):
     model = Course
     success_url = '/'
