@@ -20,7 +20,5 @@ class HomeView(LoginRequiredMixin, View):
             requestBody = decodeRequest(request)
             if requestBody:
                 if not requestBody.get("phoneNum"):
-                    print('home phone')
                     return self.get(request)
-                print('home no phone')
         return self.get(request)

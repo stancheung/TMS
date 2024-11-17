@@ -131,3 +131,8 @@ class EnrollmentDeleteView(DeleteView):
     model = Enrollment
     success_url = '/'
     template_name = 'courses/delete-enrollment.html'
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        print("timetable post")
+        return response

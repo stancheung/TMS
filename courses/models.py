@@ -33,6 +33,7 @@ class Enrollment(models.Model):
     enroll_date = models.DateTimeField(default=timezone.now)
     session_number = models.IntegerField(default=1, blank=True)
     payday = models.BooleanField(default=False)
+    attendance = models.BooleanField(default=False)
     # session_number = models.IntegerField(default=1, blank=True)
     # first_session_pointer = models.IntegerField(null=True, blank=True)
 

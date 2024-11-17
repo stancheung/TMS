@@ -5,11 +5,10 @@ async function fetchData(url, options = {}) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-
         return data;
     } catch (error) {
         console.error('Fetch error:', error);
-        alert(error);
+        //alert(error);
     }
 }
 
@@ -31,6 +30,8 @@ async function fetchDataNoReload(event, url, options = {}) {
 function displayStudentsInClass(result, counter){
   const studentList = document.getElementById('studentList');
   const classDetailModal = document.getElementById('classDetailModal');
+  const enrollmentInput = document.getElementById('enrollInput');
+  enrollInput.value="";
   //studentListRow.replaceChildren();
 
   for (i = 0; i < result.length; i++) {
@@ -39,6 +40,9 @@ function displayStudentsInClass(result, counter){
 
     if(result[i].enrollmentList){
       enrollmentList = result[i].enrollmentList;
+
+      //generateAttendanceList();
+
       for (j = 0; j < enrollmentList.length; j++){
         const studentListRow = document.createElement('div');
         const p = document.createElement('p');
@@ -57,25 +61,9 @@ function displayStudentsInClass(result, counter){
       }
     }
   }
-  counter++;
-  myFunction(counter);
-  //enrollmentAction(courseID);
-}
-
-function myFunction(counter){
-
-  const addStudentToClassButton = document.getElementById('enrollButton'); 
-  const enrollInput = document.getElementById('enrollInput');
-
-  addStudentToClassButton.addEventListener('click', ()=>{
-    console.log(counter);
-  });
-
 }
 
 function enrollmentAction(event){
-  console.log("pass");
-  /*
   event.preventDefault();
   url = "http://127.0.0.1:8000/timetable/";
   options = {
@@ -95,8 +83,8 @@ function enrollmentAction(event){
     alert(result['enroll_response']);
     enrollInput.value = "";
   })
-  */
 }
+
 /*
 function enrollmentAction(courseID){
   const enrollButton = document.getElementById('enrollButton');
@@ -160,15 +148,15 @@ function deleteClass(courseID){
     }
   });
 }
+
+//Fetch error still exists but so far it doesn't affect functionality
 function deleteEnrollment(enrollmentID){
-  console.log(enrollmentID);
-/*
   var confirmDelete = confirm("Are you sure you want to remove this student from this class?");
-  url = `/enrollment/delete/${enrollmentDetails.enrollment_pk}`;
+  url = `/enrollment/delete/${enrollmentID}`;
   options = {
     method: "POST",
     headers: {
-      "X-CSRFToken": csrfToken,
+      "X-CSRFToken": csrfToken
     }
   }
 
@@ -179,7 +167,7 @@ function deleteEnrollment(enrollmentID){
       }
     );
   }else{
+    location.reload();
     return;
   }
-  */
 }
