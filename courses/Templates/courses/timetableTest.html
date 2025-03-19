@@ -1,15 +1,53 @@
 {% extends "users/base.html" %} {% load crispy_forms_tags %} {% block content %}
 {% csrf_token %}
 
-<div id="calendar"></div>
+<div id='external-events'>
+<!--
+  <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
+    <div class='fc-event-main'>Kid Parkour</div>
+  </div>
+  <div class='fc-event fc-h-event fc-daygrid-event fc-daygrid-block-event'>
+    <div class='fc-event-main'>Adult Parkour</div>
+  </div>
+-->
+<!--
+  <table class="table table-sm table-hover mb-4">
+    <thead>
+      <tr>
+        <th scope="col"><span>Class Title</span></th>
+        <th scope="col"><span>Start At</span></th>
+        <th scope="col"><span>Finish At</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in regClasses %}
+      <tr id="toggleStudentListButton" class="draggableEvent">
+        <td><span>{{ obj.title }}</span></td>
+        <td><span>{{ obj.start }}</span></td>
+        <td><span>{{ obj.end }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
+    <div class="row">
+        <div class="col-md-2">
+            <h2>Other Content</h2>
+            <p>This is some other content.</p>
+        </div>
+        <div class="col-md-10">
+        </div>
+    </div>
+-->
+         <div id="calendar"></div>
 <script>
   url = "http://127.0.0.1:8000/timetable/";
   var courseID;
-  var counter = 0;
 
   function Timetable() {
     var calendarEl = document.getElementById("calendar");
+
     var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: "dayGridMonth",
 
@@ -21,14 +59,36 @@
       
       navLinks: false,
 
+      editable: true,
+
+      eventStartEditable: true,
+
+      eventDurationEditable: true,
+
+      droppable: true,
+
       eventDisplay: "block",
 
       events: {{ events|safe }},
 
+      drop: function(info) {
+        console.log(info.event);
+      },
+
+      eventReceive: function(info) {
+          // info.event is the newly created event
+          info.event.setStart('2025-03-18T12:00:00Z');
+          info.event.setEnd('2025-03-18T13:00:00Z');
+          info.event.setAllDay(false);
+          //alert('Event placed at: ' + info.event.start.toISOString());
+      },
+
+      eventDrop: function(info) {
+        info.event.setAllDay(false);
+      },
+
       eventClick: function (info) {
         info.jsEvent.preventDefault();
-
-        console.log(counter);
 
         courseID = info.event.id;
 
@@ -52,7 +112,7 @@
 
         fetchData(url, options).then(
           result=>{
-            displayStudentsInClass(result, counter);
+            displayStudentsInClass(result, courseID);
           }
         )
 
@@ -60,8 +120,23 @@
       },
     });
 
-    calendar.render();
+    var Draggable = FullCalendar.Draggable;
 
+    var containerEl = document.getElementById('external-events');
+    var calendarEl = document.getElementById('calendar');
+    var checkbox = document.getElementById('drop-remove');
+
+    new Draggable(containerEl, {
+      itemSelector: '.draggableEvent',
+      eventData: function(eventEl) {
+        return {
+          title: 'hello',
+          alDay: false,
+        };
+      }
+    });
+
+    calendar.render();
   }
 
   document.addEventListener("DOMContentLoaded", Timetable());

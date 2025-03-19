@@ -1,20 +1,22 @@
 import json
 from datetime import datetime
 from django.views import View
-from django.views.generic import CreateView, DeleteView, ListView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView
 from django.forms import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
-from courses.models import Course, Enrollment, Student
+from courses.models import Course, Enrollment, RegularClass, Student
 from .forms import CourseCreateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from tools import DateEncoder, is_ajax, decodeRequest
+from tools import DateEncoder, is_ajax, decodeRequest, checkNextClass
+from django.db.models.signals import post_save
+from datetime import timedelta
 
 class TimetableView(LoginRequiredMixin, View):
     template_name = 'courses/timetableTest.html'
     def get(self, request):
         # if is_ajax(request):
-        #     return self.showAllEnrollments(request)   
+        #     return self.showAllEnrollments(request)
         return self.showTimetable(request)
     
     def post(self, request):
@@ -28,6 +30,7 @@ class TimetableView(LoginRequiredMixin, View):
     def showTimetable(self, request):
         event_arr = []
         all_courses = Course.objects.all()
+        regClasses_dataset = self.getRegularClasses()
         for i in all_courses:
             event_dict = {}
             event_dict['id'] = i.pk
@@ -39,6 +42,7 @@ class TimetableView(LoginRequiredMixin, View):
         events_dataset = json.dumps(event_arr, cls=DateEncoder)
         context = {
             'events': events_dataset,
+            'regClasses': json.loads(regClasses_dataset)
         }
         return render(request, self.template_name, context)
     
@@ -107,16 +111,48 @@ class TimetableView(LoginRequiredMixin, View):
             res = {'enroll_response': 'Student added to class successfully.'}
         return JsonResponse(res) 
 
-class ClassAttendanceView(ListView):
-    template_name = "class-details.html"
-    context_object_name = "enrollments"
+    def getRegularClasses(self):
+        regClassesArr = []
+        allRegClasses = RegularClass.objects.all()
+        for i in allRegClasses:
+            regClassesDict = {}
+            regClassesDict['id'] = i.pk
+            regClassesDict['title'] = i.regClass_title
+            regClassesDict['start'] = datetime.combine(i.regClass_date, i.regClass_start)
+            regClassesDict['end'] = datetime.combine(i.regClass_date, i.regClass_end)
+            # event_dict['extendedProps'] = {'sessionNumber': i.session_number}
+            regClassesArr.append(regClassesDict)
+        regClasses_dataset = json.dumps(regClassesArr, cls=DateEncoder)
+        context = {
+            'regClasses': regClasses_dataset,
+        }
+        return regClasses_dataset
 
-    def get_queryset(self):
-        requestBody = decodeRequest(self.request)
-        print(requestBody)
-        if requestBody:
-            course_id = requestBody.get("classID")
-        return Enrollment.objects.filter(course_id=course_id)
+class ClassAttendanceView(ListView):
+    model = Course
+    template_name = "course/class-details.html"
+    context_object_name = "enrollObjects"
+
+    def get_queryset(self, **kwargs):
+        pk = self.kwargs.get('pk', None)
+        queryset = Enrollment.objects.filter(course_id=pk)
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        data = json.loads(request.body)
+
+        for item in data:
+            enrollmentObj = Enrollment.objects.filter(id=item["id"]).first()
+
+            if enrollmentObj:
+                courseID = enrollmentObj.course_id
+                print(checkNextClass(courseID))
+
+        response_data = {
+            'message': 'Attendance recorded successfully',
+            'recived_data': data
+        }
+        return JsonResponse(response_data)
 
 class ClassCreateView(CreateView):
     model = Course

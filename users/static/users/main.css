@@ -27,16 +27,12 @@ span{
     margin-left: 1rem;
 }
 
-.container {
-    width: 55%;
-}
-
 .reg-container{
     width: 30%;
 }
 
 .navbar .container {
-    width: 55%;
+    width: 60%;
 }
 
 .dropdown-toggle {
@@ -213,3 +209,7 @@ span{
     display: inline-block;
 }
 
+#external-events .fc-event {
+  cursor: move;
+  margin: 3px 0;
+}

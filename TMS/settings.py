@@ -26,9 +26,7 @@ SECRET_KEY = 'django-insecure-jp*k*0om&557w@&9f(pegbp+2aah9vk30&j!#)730!$n#a8%8b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
+ALLOWED_HOSTS = ['192.168.0.207', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
@@ -150,4 +148,4 @@ CRISPY_TEMPLATE_PACK = 'bootstrap5'
 
 LOGIN_REDIRECT_URL = "/home"
 
-LOGIN_URL = "/login"
+LOGIN_URL = "/"

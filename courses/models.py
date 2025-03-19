@@ -8,7 +8,14 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 
 class Course(models.Model):
-    course_title = models.CharField(max_length=20)
+
+    COURSES_CHOICES = (
+        ("Kids Parkour", "Kids Parkour"),
+        ("Adults Parkour", "Adults Parkour")
+    )
+
+    #course_title = models.CharField(max_length=20)
+    course_title = models.CharField('Class', max_length=20, choices = COURSES_CHOICES)
     course_date = models.DateField(default=datetime.now)
     course_start = models.TimeField(default=datetime.now)
     course_end = models.TimeField(default=datetime.now)
@@ -36,6 +43,28 @@ class Enrollment(models.Model):
     attendance = models.BooleanField(default=False)
     # session_number = models.IntegerField(default=1, blank=True)
     # first_session_pointer = models.IntegerField(null=True, blank=True)
+
+class RegularClass(models.Model):
+    RegularClass_CHOICES = (
+        ("Kids Parkour", "Kids Parkour"),
+        ("Adults Parkour", "Adults Parkour")
+    )
+
+    #course_title = models.CharField(max_length=20)
+    regClass_title = models.CharField('Class', max_length=20, choices = RegularClass_CHOICES)
+    regClass_date = models.DateField(default=datetime.now)
+    regClass_start = models.TimeField(default=datetime.now)
+    regClass_end = models.TimeField(default=datetime.now)
+    regClass_fee = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.regClass_title} {self.regClass_date} {self.regClass_start.strftime("%H:%M")}-{self.regClass_end.strftime("%H:%M")}"
+
+    def save(self, *args, **kwargs):
+        self.regClass_start = self.regClass_start.replace(second=0)
+        self.regClass_end = self.regClass_end.replace(second=0)
+        super().save(*args, **kwargs)
+
 
 '''
 @receiver(post_save, sender=Enrollment)

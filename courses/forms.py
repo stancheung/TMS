@@ -1,6 +1,5 @@
 from django import forms
 from .models import Course
-import datetime
 
 class CourseCreateForm(forms.ModelForm):
     class Meta:

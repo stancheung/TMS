@@ -1,8 +1,9 @@
 import json
-from datetime import date, datetime, time
-
+from datetime import date, datetime, time, timedelta
 from django.db.models.fields import Field
 from django.forms.models import model_to_dict
+
+from courses.models import Course
 
 class DateEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -33,3 +34,13 @@ def model_to_dict_verbose(instance):
             if original_name in data:
                 verbose_data[verbose_name] = data[original_name]
     return verbose_data
+
+def checkNextClass(courseID):
+    allClasses = Course.objects.all()
+    courseDate = courseID.course_date + timedelta(days=7)
+    startTime = courseID.course_start
+
+    for c in allClasses:
+        if c.course_start == startTime and c.course_date == courseDate:
+            return c
+    return None

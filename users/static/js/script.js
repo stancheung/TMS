@@ -1,3 +1,5 @@
+const root = location.protocol + '//' + location.host;
+
 async function fetchData(url, options = {}) {
     try {
         const response = await fetch(url, options);
@@ -40,11 +42,13 @@ async function deletionAPI(url, options = {}){
   }
 }
 
-function displayStudentsInClass(result, counter){
+function displayStudentsInClass(result, courseID){
   const studentList = document.getElementById('studentList');
   const classDetailModal = document.getElementById('classDetailModal');
   const enrollmentInput = document.getElementById('enrollInput');
   enrollInput.value="";
+
+  console.log(result);
 
   for (i = 0; i < result.length; i++) {
 
@@ -71,6 +75,18 @@ function displayStudentsInClass(result, counter){
         }
       }
     }
+  }
+  attendanceFunction(courseID);
+}
+
+function attendanceFunction(courseID){
+  const attendancePageButton = document.getElementById("attendancePageButton");
+
+  if(attendancePageButton){
+    attendancePageButton.setAttribute("href", `${root}/attendance/${courseID}`);
+    attendancePageButton.addEventListener('click', ()=>{
+      console.log("attend");
+    });
   }
 }
 
