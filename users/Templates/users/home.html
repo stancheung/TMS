@@ -16,7 +16,7 @@
         </thead>
         <tbody>
           {% for obj in today_class_list %}
-          <tr id="toggleStudentListButton">
+          <tr id="toggleStudentListButton{{ obj.id }}" onclick="toggleStudentListButtonClick()">
             <td id="courseID"><span>{{ obj.id}}</span></td>
             <td><span>{{ obj.course_title }}</span></td>
             <td><span>{{ obj.course_start }}</span></td>
@@ -51,6 +51,40 @@
   <script>
     url = "/timetable/";
 
+    function toggleStudentListButtonClick()
+    {
+      courseID = document.getElementById('courseID').innerText;
+      console.log(courseID);
+      var StudentListModal = new bootstrap.Modal(document.getElementById('StudentListModal'), {});
+      StudentListModal.show();
+
+      options = {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: JSON.stringify({
+          'classID': courseID,
+        }),
+        credentials: 'same-origin'
+      }
+
+      //studentList.replaceChildren();
+
+      fetchData(url, options).then(
+        result=>{
+          displayStudentsInClass(result, courseID);
+        }
+      );
+
+
+      deleteClass(courseID);
+
+    }
+
+/*
     toggleStudentListButton.addEventListener('click', ()=>{
       courseID = document.getElementById('courseID').innerText;
       console.log(courseID);
@@ -80,6 +114,7 @@
 
 
       deleteClass(courseID);
-    });
+    }); 
+    */
   </script>
 {% endblock %}

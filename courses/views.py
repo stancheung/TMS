@@ -28,6 +28,7 @@ class TimetableView(LoginRequiredMixin, View):
         return self.showTimetable(request)
 
     def showTimetable(self, request):
+        form = CourseCreateForm()
         event_arr = []
         all_courses = Course.objects.all()
         regClasses_dataset = self.getRegularClasses()
@@ -42,7 +43,8 @@ class TimetableView(LoginRequiredMixin, View):
         events_dataset = json.dumps(event_arr, cls=DateEncoder)
         context = {
             'events': events_dataset,
-            'regClasses': json.loads(regClasses_dataset)
+            'regClasses': json.loads(regClasses_dataset),
+            'form': form
         }
         return render(request, self.template_name, context)
     

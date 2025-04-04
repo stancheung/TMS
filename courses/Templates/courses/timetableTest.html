@@ -67,6 +67,19 @@
 
       droppable: true,
 
+      dateClick: function(info){
+        var addClassYear = info.date.getFullYear();
+        var addClassMonth = ("0" + info.date.getDate()).slice(-2);
+        var addClassDate = ("0" + (info.date.getMonth() + 1)).slice(-2);
+
+        var AddClassModal = new bootstrap.Modal(document.getElementById('AddClassModal'), {});
+        AddClassModal.show();
+
+        var id_course_date = document.getElementById('id_course_date');
+        var course_date = addClassYear + "-" + addClassMonth + "-" +addClassDate;
+        id_course_date.value = course_date;
+      },
+
       eventDisplay: "block",
 
       events: {{ events|safe }},
@@ -85,6 +98,8 @@
 
       eventDrop: function(info) {
         info.event.setAllDay(false);
+
+        info.jsEvent.preventDefault();
       },
 
       eventClick: function (info) {
