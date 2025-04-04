@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Student
+from .models import Student, LessonPlan
 from django.contrib.auth.admin import UserAdmin
 
 class studentsAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ class studentsAdmin(admin.ModelAdmin):
         return f"{obj.studentFirstName} {obj.studentLastName}"
 
 admin.site.register(Student, studentsAdmin)
+admin.site.register(LessonPlan)

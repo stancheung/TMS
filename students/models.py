@@ -36,3 +36,22 @@ class Student(models.Model):
 
     def __str__(self):
         return f"{self.studentFirstName} {self.studentLastName}"
+
+class LessonPlan(models.Model):
+    PLAN_CHOICES = (
+        ('8', '8 Lessons'),
+        ('4', '4 Lessons'),
+        ('1', '1 Lesson')
+    )
+
+    lessonPlan = models.CharField('Lesson Plan', max_length = 1, choices = PLAN_CHOICES)
+    remainingLessons = models.IntegerField(default = 0)
+    planOwner = models.ForeignKey(Student, on_delete = models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        print(self.lessonPlan)
+        
+        if self.lessonPlan == "8":
+            self.remainingLessons = 8
+
+        super().save(*args, **kwargs)
