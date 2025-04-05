@@ -18,5 +18,5 @@ urlpatterns = [
     path('timetable/', courses_views.TimetableView.as_view(), name='Timetable'),
     path("new-class/",courses_views.ClassCreateView.as_view(template_name="courses/create-class.html"),name="CreateClass"),
     path("enrollment/delete/<int:pk>", courses_views.EnrollmentDeleteView.as_view(), name="DeleteEnrollment"),
-    path("attendance/<pk>", courses_views.ClassAttendanceView.as_view(template_name="courses/class-details.html"), name="Attendance")
+    path("attendance/<pk>", courses_views.ClassAttendanceView.as_view(template_name="courses/attendance.html"), name="Attendance")
 ]

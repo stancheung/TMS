@@ -132,7 +132,8 @@ class TimetableView(LoginRequiredMixin, View):
 
 class ClassAttendanceView(ListView):
     model = Course
-    template_name = "course/class-details.html"
+    # template_name = "course/class-details.html"
+    template_name = "courses/attendance.html"
     context_object_name = "enrollObjects"
 
     def get_queryset(self, **kwargs):
@@ -143,15 +144,15 @@ class ClassAttendanceView(ListView):
     def post(self, request, *args, **kwargs):
         data = json.loads(request.body)
 
-        for item in data:
-            enrollmentObj = Enrollment.objects.filter(id=item["id"]).first()
+        # for item in data:
+        #     enrollmentObj = Enrollment.objects.filter(id=item["id"]).first()
 
-            if enrollmentObj:
-                courseID = enrollmentObj.course_id
-                print(checkNextClass(courseID))
+        #     if enrollmentObj:
+        #         courseID = enrollmentObj.course_id
+        #         print(checkNextClass(courseID))
 
         response_data = {
-            'message': 'Attendance recorded successfully',
+            'messages': 'Attendance recorded successfully',
             'recived_data': data
         }
         return JsonResponse(response_data)

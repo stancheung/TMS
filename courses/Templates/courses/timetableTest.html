@@ -125,11 +125,13 @@
 
         //studentList.replaceChildren();
 
+        
         fetchData(url, options).then(
           result=>{
             displayStudentsInClass(result, courseID);
           }
         )
+        
 
         deleteClass(courseID);
       },

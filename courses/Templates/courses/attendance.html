@@ -1,0 +1,102 @@
+{% extends "users/base.html" %} {% load crispy_forms_tags %} {% block content %}
+<form method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <fieldset class="form-group">
+    <h5>Attendance Form</h5>
+    <div class="card mb-3">
+      <div class="card-body">
+        <table id="attendanceTable" class="table table-sm table-hover mb-4">
+          <thead>
+            <tr>
+              <th scope="col"><span>Student Name</span></th>
+              <th scope="col"><span>Phone Number</span></th>
+              <th scope="col"><span>Attendance</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for obj in enrollObjects %}
+            <tr id="{{ obj.id }}">
+              <td>
+                <label for="{{ obj.id }}">
+                  <span>{{ obj.student_id }}</span>
+                </label>
+              </td>
+              <td><span>{{ obj.student_id.studentContactNumber }}</span></td>
+              <td>
+                <span>
+                    {% if obj.attendance %}
+                      <input
+                      id="{{ obj.id }}"
+                      class="form-check-input"
+                      type="checkbox"
+                      checked/>
+                    {% else %}
+                      <input
+                      id="{{ obj.id }}"
+                      class="form-check-input"
+                      type="checkbox"/>
+                    {% endif %}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div>
+      <button
+        id="attendanceFormButton"
+        class="btn btn-primary text-white"
+        type="button"
+        style="float: right"
+      >
+        Save
+      </button>
+    </div>
+  </fieldset>
+</form>
+
+<script>
+  document
+    .getElementById("attendanceFormButton")
+    .addEventListener("click", function () {
+      const table = document.getElementById("attendanceTable");
+      const rows = table.getElementsByTagName("tr");
+      const attendanceData = [];
+
+      for (let i = 1; i < rows.length; i++) {
+        // Starting from 1 to skip the header row
+        const row = rows[i];
+        const rowId = row.id;
+        const checkbox = row.querySelector('input[type="checkbox"]');
+        const isChecked = checkbox.checked;
+
+        const attendanceRecord = {
+          id: rowId,
+          attendance: isChecked,
+        };
+        attendanceData.push(attendanceRecord);
+      }
+
+      console.log(attendanceData);
+      const jsonData = JSON.stringify(attendanceData);
+
+      url = window.location.href;
+      options = {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrfToken,
+        },
+        body: jsonData,
+        credentials: "same-origin",
+      };
+
+      fetchData(url, options).then((result) => {
+        alert(result["messages"]);
+      });
+    });
+</script>
+{% endblock %}

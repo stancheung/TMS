@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-jp*k*0om&557w@&9f(pegbp+2aah9vk30&j!#)730!$n#a8%8b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.207', '192.168.0.127', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.0.207', '192.168.0.127', '127.0.0.1', "97d8-42-3-146-242.ngrok-free.app"]
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,12 +36,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'corsheaders',
     'crispy_forms',
     'crispy_bootstrap5',
     'bootstrap5',
     'users',
     'students',
     'courses',
+]
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8000",
+#     "http://127.0.0.1:8000",
+#     "https://97d8-42-3-146-242.ngrok-free.app",
+# ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "https://97d8-42-3-146-242.ngrok-free.app",
 ]
 
 MIDDLEWARE = [
@@ -52,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'TMS.urls'
@@ -136,7 +150,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "static",
+    BASE_DIR / "users/static",
 ]
 
 # Default primary key field type
